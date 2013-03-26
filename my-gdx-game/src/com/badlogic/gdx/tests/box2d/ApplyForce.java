@@ -51,15 +51,40 @@ import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class ApplyForce extends Box2DTest {
-	Body m_body;
-	Body bodies[][];
-	private static int n = 3;
-	private Texture jelly;
+	
+	//Body m_body;
+	//Body bodies[][];
+	//private static int n = 3;
+	//private Texture jelly;
+	boolean xRay;
 	private int frames;
+	PhysicalCell physicalCells[];
 	@Override
 	protected void createWorld (World world) {
 		world.setGravity(new Vector2(0, -100));
-		jelly = new Texture("data/jelly_green.png");
+		//jelly = new Texture("data/jelly_green.png");
+		
+		Vector2 textureSize = new Vector2(23f/256f, 23f/256f);
+		Vector2 PhySize = new Vector2(5f, 5f);
+		PhysicalCell.SetSize(textureSize, PhySize);
+		physicalCells = new PhysicalCell[10];
+		
+		for (int i = 0; i <2; i ++) {
+			Texture texture = new Texture("data/jelly_green.png");
+			Vector2 pos = new Vector2( (i * 8) % 16 - 18, i * 7 + 6);
+			
+			Vector2 bottomLeft[][] = new Vector2[2][2];
+			bottomLeft[0][0] = new Vector2(9f/256f, 199f/256f);
+			bottomLeft[0][1] = new Vector2(9f/256f, 81f/256f);
+			bottomLeft[1][0] = new Vector2(224f/256f, 199f/256f);
+			bottomLeft[1][1] = new Vector2(224f/256f, 81f/256f);
+			
+			physicalCells[i] = new PhysicalCell(pos, texture, world);
+			//physicalCells[i].setTextureParams(bottomLeft, textureSize);
+			physicalCells[i].setTextureBL(bottomLeft);
+			
+		}		
+		
 		float k_restitution = 0.0f;
 		Body ground;
 
@@ -89,8 +114,11 @@ public class ApplyForce extends Box2DTest {
 
 			shape.dispose();
 		}
+		
+		
 
-		if (false) {
+		/*
+		{
 			Transform xf1 = new Transform(new Vector2(), 0.3524f * (float)Math.PI);
 			xf1.setPosition(xf1.mul(new Vector2(1, 0)));
 
@@ -134,7 +162,7 @@ public class ApplyForce extends Box2DTest {
 			poly1.dispose();
 			poly2.dispose();
 		}
-
+*//*
 		{
 			PolygonShape shape = new PolygonShape();
 			shape.setAsBox(0.5f, 0.5f);
@@ -196,25 +224,9 @@ public class ApplyForce extends Box2DTest {
 			}
 			shape.dispose();
 		}
+		*/
 	}
-
-	private void join(Body b1, Body b2, float length) {
-		DistanceJointDef jd = new DistanceJointDef(); 
-		jd.localAnchorA.set(0, 0);
-		jd.localAnchorB.set(0, 0);
-		jd.bodyA = b1;
-		jd.bodyB = b2;
-		jd.collideConnected = true;
-		//jd.maxLength = 10 + 2 * i;
-		jd.length = length;
-		//jd.maxForce = mass * gravity;
-		//jd.maxTorque = mass * radius * gravity;
-		jd.dampingRatio = 0f;
-		jd.frequencyHz = 5;
-		world.createJoint(jd);
-		
-	}
-	
+/*
 	private Mesh buildMesh(Texture texture, Vector2 bottomLeft,
 			Vector2 size, Body[][] bodiesMat) {
 		
@@ -259,51 +271,75 @@ public class ApplyForce extends Box2DTest {
 		mesh.setVertices(vertices);			// upper left
 		mesh.setIndices(indices);
 
-		return mesh;
-		
-		
+		return mesh;		
 	}
+	
+	private void join(Body b1, Body b2, float length) {
+		
+		DistanceJointDef jd = new DistanceJointDef(); 
+		jd.localAnchorA.set(0, 0);
+		jd.localAnchorB.set(0, 0);
+		jd.bodyA = b1;
+		jd.bodyB = b2;
+		jd.collideConnected = true;
+		//jd.maxLength = 10 + 2 * i;
+		jd.length = length;
+		//jd.maxForce = mass * gravity;
+		//jd.maxTorque = mass * radius * gravity;
+		jd.dampingRatio = 0f;
+		jd.frequencyHz = 5;
+		world.createJoint(jd);
+	}
+	
+
 
 	short vertex(int i, int j) {
 		return (short) (i * n + j);
 	}
 	private final Vector2 tmp = new Vector2();
-
+*/
+		
+		
 	public boolean keyDown (int keyCode) {
+		
+		PhysicalCell cell = physicalCells[0];
+		
 		if (keyCode == Keys.W) {
 			/*
 			Vector2 f = m_body.getWorldVector(tmp.set(0, -200));
 			Vector2 p = m_body.getWorldPoint(tmp.set(0, 2));
 			m_body.applyForce(f, p);
 			*/
-			bodies[0][n-1].applyForce(new Vector2(0, n * 20), new Vector2(0, 0));
+			cell.applyForce(0, 3 - 1, new Vector2(0, 3 * 20));
 			//bodies[n-1][n-1].applyForce(new Vector2(0, n * 20), new Vector2(0, 0));
 		}
 		if (keyCode == Keys.A) {
-			//bodies[0][0].applyForce(new Vector2(- n * 200, 0), new Vector2(0, 0));
-			//bodies[n-1][0].applyForce(new Vector2(- n * 200, 0), new Vector2(0, 0));
-			bodies[1][1].applyLinearImpulse(new Vector2(- n * 20, 0), new Vector2(0, 0));
+			cell.applyLinearImpulse(1, 1, new Vector2(- 3 * 20, 0));
 			//bodies[n-1][0].applyLinearImpulse(new Vector2(- n * 2, 0), new Vector2(0, 0));
-			bodies[0][0].setType(BodyType.DynamicBody);
-			bodies[n-1][0].setType(BodyType.DynamicBody);
-			//bodies[0][n - 1].applyForce(new Vector2(- n * 200, 0), new Vector2(0, 0));
+			
+			//cell.setType(0, 0, BodyType.DynamicBody);
+			//cell.setType(0, 3 - 1, BodyType.DynamicBody);
 		}
 			//m_body.applyTorque(50);
 		if (keyCode == Keys.D) {//
-			//bodies[n/2][n/2].setLinearVelocity(new Vector2(50, 0));
-			bodies[0][0].setType(BodyType.DynamicBody);
-			bodies[n-1][0].setType(BodyType.DynamicBody);
-			bodies[1][1].applyForce(new Vector2(n * 2000, 0), new Vector2(0, 0));
-			//bodies[n-1][0].applyForce(new Vector2(n * 200, 0), new Vector2(0, 0));
-			//bodies[0][n - 1].applyForce(new Vector2(n * 200, 0), new Vector2(0, 0));
+			cell.applyLinearImpulse(1, 1, new Vector2(+ 3 * 20, 0));
+			//bodies[n-1][0].applyLinearImpulse(new Vector2(- n * 2, 0), new Vector2(0, 0));
+			
+			cell.setType(0, 0, BodyType.DynamicBody);
+			cell.setType(2, 0, BodyType.DynamicBody);
 			//m_body.applyTorque(-50);
 		}
-		if (keyCode == Keys.X) { 
-			bodies[0][0].setType(BodyType.StaticBody);
-			bodies[n-1][0].setType(BodyType.StaticBody);
-			//bodies[1][1].setType(BodyType.StaticBody);
+		if (keyCode == Keys.S) { 
+			cell.setType(0, 0, BodyType.StaticBody);
+			cell.setType(2, 0, BodyType.StaticBody);
 			//m_body.applyTorque(-50);
 		}
+		if (keyCode == Keys.X) {
+			xRay = ! xRay;
+		}
+		if (keyCode == Keys.M) {
+			physicalCells[0].merge(physicalCells[1], 1);
+		}		
 		return false;
 	}
 	
@@ -317,6 +353,7 @@ public class ApplyForce extends Box2DTest {
 		startTime = TimeUtils.nanoTime();
 		// clear the screen and setup the projection matrix
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
 		camera.update();
 
 		// render the world using the debug renderer
@@ -325,11 +362,20 @@ public class ApplyForce extends Box2DTest {
 		float renderTime = (TimeUtils.nanoTime() - startTime) / 1000000000.0f;
 
 			
-		if (frames > 600) {
+		if (xRay) {
 			batch.begin();
 			font.draw(batch, "fps:" + Gdx.graphics.getFramesPerSecond() + ", update: " + updateTime + ", render: " + renderTime, 0, 20);
 			batch.end();
 		} else {
+			
+			
+			PhysicalCell cell;
+			for (int i = 0; i < 10 ;i++) {
+				cell = physicalCells[i];
+				if (cell != null)
+						cell.render();
+			}
+			/*
 			GL10 gl = Gdx.graphics.getGL10();
 			gl.glEnable(GL10.GL_TEXTURE_2D);
 			
@@ -349,9 +395,7 @@ public class ApplyForce extends Box2DTest {
 	        gl.glRotatef(0, 0f, 0f, 1f);
 	        mesh.render(GL10.GL_TRIANGLES);
 	        gl.glPopMatrix();
+	        */
 		}
-		
-		if (frames++ >= 1200)
-			frames = 0;
 	}
 }
