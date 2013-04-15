@@ -69,7 +69,7 @@ public class ApplyForce extends Box2DTest {
 		PhysicalCell.SetSize(textureSize, PhySize);
 		physicalCells = new PhysicalCell[10];
 		
-		for (int i = 0; i <2; i ++) {
+		for (int i = 0; i <1; i ++) {
 			Texture texture = new Texture("data/jelly_green.png");
 			Vector2 pos = new Vector2( (i * 8) % 16 - 18, i * 7 + 6);
 			

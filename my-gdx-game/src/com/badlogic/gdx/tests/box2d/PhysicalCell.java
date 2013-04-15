@@ -39,13 +39,13 @@ class PhysicalCell {
 		FixtureDef fd = new FixtureDef();
 		fd = new FixtureDef();
 		
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(physicalSize.x / 6, physicalSize.y / 6);
-		//CircleShape shape = new CircleShape();
-		//shape.setRadius(r);
+		//PolygonShape shape = new PolygonShape();
+		//shape.setAsBox(physicalSize.x / 6, physicalSize.y / 6);
+		CircleShape shape = new CircleShape();
+		shape.setRadius(0.2f);
 		
 		fd.shape = shape;
-		fd.density = 0.2f;
+		fd.density = 6f;
 		fd.friction = 0.0f;
 		fd.restitution = 0.0f;
 
@@ -55,8 +55,8 @@ class PhysicalCell {
 		// body vertices
 		float x = pos.x;
 		float y = pos.y;
-		float dx = physicalSize.x / 3;
-		float dy = physicalSize.y / 3;
+		float dx = physicalSize.x / 2;
+		float dy = physicalSize.y / 2;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				if (i * j == 1)
@@ -68,7 +68,7 @@ class PhysicalCell {
 			}
 		}
 		// central body
-		shape.setAsBox(0, 0);
+		//shape.setAsBox(0, 0);
 		bodies[1][1] = world.createBody(bd);
 		shape.dispose();
 		
@@ -207,7 +207,7 @@ class PhysicalCell {
 		jd.length = length;
 		//jd.maxForce = mass * gravity;
 		//jd.maxTorque = mass * radius * gravity;
-		jd.dampingRatio = 0.5f;
+		jd.dampingRatio = 0f;
 		jd.frequencyHz = 6;
 		world.createJoint(jd);
 	}
@@ -215,7 +215,7 @@ class PhysicalCell {
 	void merge(PhysicalCell peer, int dir) {
 		
 		DistanceJointDef jd = new DistanceJointDef();
-		jd.length = physicalSize.x / 3;
+		jd.length = 0.95f * (physicalSize.x / 3);
 		jd.collideConnected = false;
 		//jd.dampingRatio = 0.5f;
 		//jd.frequencyHz = 6;
@@ -224,11 +224,11 @@ class PhysicalCell {
 		
 		if (dir == 1) { // right TODO: fix it
 
-
+			
 			jd.bodyA = this.bodies[2][0];
 			jd.bodyB = peer.bodies[0][0];
 			world.createJoint(jd);
-
+			
 			jd.bodyA = this.bodies[2][1];
 			jd.bodyB = peer.bodies[0][1];
 			world.createJoint(jd);
